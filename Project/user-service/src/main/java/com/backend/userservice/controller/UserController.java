@@ -1,8 +1,6 @@
 package com.backend.userservice.controller;
 
-import com.backend.userservice.dto.EmailUpdateRequest;
-import com.backend.userservice.dto.PasswordUpdateRequest;
-import com.backend.userservice.dto.UserRequest;
+import com.backend.userservice.dto.*;
 import com.backend.userservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,6 +18,8 @@ public class UserController {
     public void userCreate(@RequestBody UserRequest userRequest){
         userService.createUser(userRequest);
     }
+
+
 
     @PostMapping("/updateEmail")
     @ResponseStatus(HttpStatus.OK)

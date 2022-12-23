@@ -8,16 +8,19 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="service-discovery-server" />
+        <module name="profile-service" />
         <module name="user-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="profile-service" target="19" />
       <module name="service-discovery-server" target="19" />
       <module name="user-service" target="19" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="profile-service" options="-parameters" />
       <module name="service-discovery-server" options="-parameters" />
       <module name="user-service" options="-parameters" />
     </option>
