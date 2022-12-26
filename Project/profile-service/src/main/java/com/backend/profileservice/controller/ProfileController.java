@@ -16,11 +16,23 @@ public class ProfileController {
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
     public void createProfile(@RequestBody ProfileRequest profileRequest){
-        System.out.println(profileRequest.getProfileName()+
-                " - "+profileRequest.getOwnerName());
+        System.out.println("Profile creation ...");
         profileService.createProfile(profileRequest);
     }
 
+    @PostMapping("/updateName")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateProfileName(@RequestBody ProfileRequest profileRequest){
+        System.out.println("Profile name updating ...");
+        profileService.updateProfileName(profileRequest);
+    }
+
+    @PostMapping("/delete")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteProfile(@RequestBody ProfileRequest profileRequest){
+        System.out.println("Profile deletion ...");
+        profileService.deleteProfile(profileRequest);
+    }
 
 
 }
