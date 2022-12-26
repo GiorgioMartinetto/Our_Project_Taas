@@ -53,14 +53,14 @@ public class UserService {
 
         System.out.println("Default Profile ...");
 
-        Mono<ProfileRequest> t = webClientBuilder.build().post()
-                .uri("http://localhost:8082/api/profile/create")
-                .body(Mono.just(profileRequest),ProfileRequest.class)
+        webClientBuilder.build().post()
+                .uri("http://profile-service/api/profile/create",
+                        uriBuilder -> uriBuilder.build())
+                .body(Mono.just(profileRequest), ProfileRequest.class)
                 .retrieve()
-                .bodyToMono(ProfileRequest.class);
+                .bodyToMono(Void.class)
+                .block();
 
-
-        System.out.println(t.toString());
     }
 
     public void updateEmail(EmailUpdateRequest emailUpdateRequest){

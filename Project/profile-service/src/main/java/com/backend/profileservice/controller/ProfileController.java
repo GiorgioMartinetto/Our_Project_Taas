@@ -16,7 +16,11 @@ public class ProfileController {
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
     public void createProfile(@RequestBody ProfileRequest profileRequest){
-        System.out.println("Ciaoooooooooooooooooooooo");
+        System.out.println(profileRequest.getProfileName()+
+                " - "+profileRequest.getOwnerName());
         profileService.createProfile(profileRequest);
     }
+
+
+
 }
