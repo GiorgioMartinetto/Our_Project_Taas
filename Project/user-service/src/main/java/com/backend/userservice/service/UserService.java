@@ -95,5 +95,30 @@ public class UserService {
 
     }
 
+    public void unsubscribeUser(UnsubscribeUserRequest unsubscribeUserRequest){
+        Optional<User> user = userRepository.getUserByUserName(unsubscribeUserRequest.getUserName());
+
+        if(user.isPresent()){
+            User _user = user.get();
+            if( _user.getPassword().equals(unsubscribeUserRequest.getPassword()) ){
+
+                webClientBuilder.build().post()
+                        .uri("http://profile-service/api/profile/unsubscription",
+                                uriBuilder -> uriBuilder.build())
+                        .body(Mono.just(_user.getUserName()), String.class)
+                        .retrieve()
+                        .bodyToMono(Void.class)
+                        .block();
+
+                userRepository.delete(_user);
+            } else {
+                throw new IllegalArgumentException("Something went wrong!");
+            }
+
+        } else {
+            throw new IllegalArgumentException("Something went wrong!");
+        }
+    }
+
 
 }

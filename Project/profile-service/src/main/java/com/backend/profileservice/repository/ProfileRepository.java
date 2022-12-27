@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface ProfileRepository extends JpaRepository<Profile,Long> {
     Optional<Profile> getProfileByOwnerName(String owner);
     void deleteProfileByProfileNameAndOwnerName(String profileName, String ownerName);
+
+    void deleteAllByOwnerName(String name);
 }

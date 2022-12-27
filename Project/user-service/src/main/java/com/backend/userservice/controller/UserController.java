@@ -32,4 +32,10 @@ public class UserController {
     public void updatePassword(@RequestBody PasswordUpdateRequest passwordUpdateRequest){
         userService.updatePassword(passwordUpdateRequest);
     }
+
+    @PostMapping("/unsubscribe")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void unsubscribeUser(@RequestBody UnsubscribeUserRequest unsubscribeUserRequest){
+        userService.unsubscribeUser(unsubscribeUserRequest);
+    }
 }

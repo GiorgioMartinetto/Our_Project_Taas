@@ -34,5 +34,11 @@ public class ProfileController {
         profileService.deleteProfile(profileRequest);
     }
 
+    @PostMapping("/unsubscription")
+    @ResponseStatus(HttpStatus.OK)
+    public void unsubscriptionUser(@RequestBody String name){
+        profileService.unsubscriptionUser(name);
+    }
+
 
 }

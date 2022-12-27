@@ -52,4 +52,8 @@ public class ProfileService {
         }
     }
 
+    public void unsubscriptionUser(String name){
+        profileRepository.deleteAllByOwnerName(name);
+    }
+
 }

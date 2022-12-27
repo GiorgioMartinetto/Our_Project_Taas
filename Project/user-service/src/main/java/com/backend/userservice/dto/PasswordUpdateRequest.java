@@ -12,6 +12,5 @@ import lombok.NoArgsConstructor;
 public class PasswordUpdateRequest {
     private Long id;
     private String oldPassword;
-
     private String newPassword;
 }
