@@ -1,6 +1,6 @@
 package com.backend.netflixservice.service;
 
-import com.backend.netflixservice.dto.UserRequest;
+import com.backend.netflixservice.dto.AuthUserRequest;
 import lombok.*;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,7 @@ public class FakeNetflixService {
     private List<User> users = new ArrayList<>(Arrays.asList(User.builder().email("giorgio.martinetto@outlook.it").password("prova1").build(),
     User.builder().email("giorgio.perna@outlook.it").password("prova2").build()));
     
-    public boolean validateUser(UserRequest userRequest){
+    public boolean validateUser(AuthUserRequest userRequest){
         System.out.println(users);
         
         

@@ -1,6 +1,6 @@
 package com.backend.netflixservice.controller;
 
-import com.backend.netflixservice.dto.UserRequest;
+import com.backend.netflixservice.dto.AuthUserRequest;
 import com.backend.netflixservice.service.FakeNetflixService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +16,7 @@ public class FakeNetflixController {
     private final FakeNetflixService fakeNetflixService;
 
     @PostMapping
-    public void validateUser(@RequestBody UserRequest userRequest){
+    public void validateUser(@RequestBody AuthUserRequest userRequest){
         fakeNetflixService.validateUser(userRequest);
     }
 }
