@@ -2,6 +2,8 @@ package com.backend.userservice.model;
 
 import lombok.*;
 
+import java.util.Set;
+
 import javax.persistence.*;
 
 @Entity
@@ -23,4 +25,8 @@ public class User {
 
     @Column(name = "password")
     private String password;
+
+    @OneToMany(mappedBy = "user")
+    private Set<Subscription> subscriptions;
+
 }
