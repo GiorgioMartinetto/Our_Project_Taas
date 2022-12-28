@@ -7,6 +7,8 @@
         <option value="$PROJECT_DIR$/user-service/pom.xml" />
         <option value="$PROJECT_DIR$/profile-service/pom.xml" />
         <option value="$PROJECT_DIR$/api-gateway/pom.xml" />
+        <option value="$PROJECT_DIR$/netflix-service/pom.xml" />
+        <option value="$PROJECT_DIR$/prime-service/pom.xml" />
       </list>
     </option>
   </component>
