@@ -16,7 +16,7 @@ public class FakeNetflixController {
     private final FakeNetflixService fakeNetflixService;
 
     @PostMapping
-    public void validateUser(@RequestBody AuthUserRequest userRequest){
-        fakeNetflixService.validateUser(userRequest);
+    public Boolean validateUser(@RequestBody AuthUserRequest userRequest){
+        return fakeNetflixService.validateUser(userRequest);
     }
 }

@@ -12,6 +12,7 @@ import reactor.core.publisher.Mono;
 
 import javax.naming.AuthenticationException;
 
+
 @Service
 @RequiredArgsConstructor
 public class SubscriptionService {
@@ -26,9 +27,10 @@ public class SubscriptionService {
     public void authenticationSubscription(SubscriptionAuthDto subscriptionAuthDto) throws AuthenticationException {
         String uri;
         AuthUserRequest authUserRequest = AuthUserRequest.builder()
-                        .email(subscriptionAuthDto.getEmail())
+                        .email(subscriptionAuthDto.getEmailPlatform())
                         .password(subscriptionAuthDto.getPassword())
                         .build();
+
         switch (subscriptionAuthDto.getPlatform()){
             case "netflix":
                 uri = "http://netflix-service/api/netflix";
@@ -40,15 +42,18 @@ public class SubscriptionService {
                 throw new AuthenticationException("Invalid Platform Value ...");
 
         }
-        boolean control = Boolean.TRUE.equals(webClientBuilder.build().post()
-                .uri(uri, uriBuilder -> uriBuilder.build())
-                .body(Mono.just(authUserRequest), AuthUserRequest.class)
-                .retrieve()
-                .bodyToMono(Boolean.class)
-                .block());
+
+         boolean control = Boolean.TRUE.equals(webClientBuilder.build().post()
+                 .uri(uri)
+                 .body(Mono.just(authUserRequest), AuthUserRequest.class)
+                 .retrieve()
+                 .bodyToMono(Boolean.class)
+                 .block());
+
 
         if(control){
-            User user = userService.getUserByEmail(subscriptionAuthDto.getEmail());
+            System.out.println(subscriptionAuthDto.getUserName());
+            User user = userService.getUserByUser(subscriptionAuthDto.getUserName());
             if(user != null){
                 System.out.println("Authentication OK ...");
                 Subscription subscription = Subscription.builder()
@@ -57,10 +62,10 @@ public class SubscriptionService {
                         .build();
                 subscriptionRepository.save(subscription);
             } else {
-                System.out.println("Authentication FAIL ...");
+                System.out.println("Authentication FAIL: User is NULL ...");
             }
         } else {
-            System.out.println("Authentication FAIL ...");
+            System.out.println("Authentication FAIL: control is false ...");
         }
     }
 }

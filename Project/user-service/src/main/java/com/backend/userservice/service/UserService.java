@@ -120,8 +120,8 @@ public class UserService {
         }
     }
 
-    public User getUserByEmail(String email){
-        Optional<User> user = userRepository.getUserByEmail(email);
+    public User getUserByUser(String email){
+        Optional<User> user = userRepository.getUserByUserName(email);
         if(user.isPresent()){
             User _user = user.get();
             return _user;

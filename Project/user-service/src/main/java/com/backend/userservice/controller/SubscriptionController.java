@@ -16,12 +16,12 @@ public class SubscriptionController {
 
     private final SubscriptionService subscriptionService;
 
-    @PostMapping("/authentication")
-    public void authenticationSubscription(@RequestBody SubscriptionAuthDto subscriptionAuthDto){
+    @PostMapping("/addSubscription")
+    public void addSubscription(@RequestBody SubscriptionAuthDto subscriptionAuthDto){
         try{
             subscriptionService.authenticationSubscription(subscriptionAuthDto);
         } catch (Exception e){
-
+            System.out.println(e.getMessage());
         }
     }
 }

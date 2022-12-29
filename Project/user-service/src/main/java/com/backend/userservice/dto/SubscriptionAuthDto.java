@@ -9,8 +9,8 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SubscriptionAuthDto {
-    private String email;
+    private String emailPlatform;
     private String password;
-
+    private String userName;
     private String platform;
 }

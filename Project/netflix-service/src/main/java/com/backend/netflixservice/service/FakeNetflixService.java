@@ -16,13 +16,17 @@ public class FakeNetflixService {
     User.builder().email("giorgio.perna@outlook.it").password("prova2").build()));
     
     public boolean validateUser(AuthUserRequest userRequest){
-        System.out.println(users);
+
         
         
         User _user = User.builder().email(userRequest.getEmail()).password(userRequest.getPassword()).build();
         
         for (User user: users) {
-            if(user.getEmail().equals(_user.getEmail()) && user.getPassword().equals(_user.getPassword())) return true;
+            if(user.getEmail().equals(_user.getEmail()) && user.getPassword().equals(_user.getPassword()))
+            {
+                System.out.println("Authentication OK ...");
+                return true;
+            }
         }
         
         return false;
