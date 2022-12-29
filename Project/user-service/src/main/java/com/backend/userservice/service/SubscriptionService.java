@@ -1,8 +1,9 @@
 package com.backend.userservice.service;
 
 import com.backend.userservice.dto.AuthUserRequest;
-import com.backend.userservice.dto.ProfileRequest;
 import com.backend.userservice.dto.SubscriptionAuthDto;
+import com.backend.userservice.model.Subscription;
+import com.backend.userservice.model.User;
 import com.backend.userservice.repository.SubscriptionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,16 +17,18 @@ import javax.naming.AuthenticationException;
 public class SubscriptionService {
 
     private final SubscriptionRepository subscriptionRepository;
+
+    private final UserService userService;
     private final WebClient.Builder webClientBuilder;
 
 
 
     public void authenticationSubscription(SubscriptionAuthDto subscriptionAuthDto) throws AuthenticationException {
+        String uri;
         AuthUserRequest authUserRequest = AuthUserRequest.builder()
                         .email(subscriptionAuthDto.getEmail())
                         .password(subscriptionAuthDto.getPassword())
                         .build();
-        String uri = new String();
         switch (subscriptionAuthDto.getPlatform()){
             case "netflix":
                 uri = "http://netflix-service/api/netflix";
@@ -45,7 +48,19 @@ public class SubscriptionService {
                 .block());
 
         if(control){
-            //TODO:AGGIUNGERE L'INSERIMENTO NEL DB
+            User user = userService.getUserByEmail(subscriptionAuthDto.getEmail());
+            if(user != null){
+                System.out.println("Authentication OK ...");
+                Subscription subscription = Subscription.builder()
+                        .user(user)
+                        .platform(subscriptionAuthDto.getPlatform())
+                        .build();
+                subscriptionRepository.save(subscription);
+            } else {
+                System.out.println("Authentication FAIL ...");
+            }
+        } else {
+            System.out.println("Authentication FAIL ...");
         }
     }
 }
