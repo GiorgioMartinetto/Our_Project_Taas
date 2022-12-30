@@ -10,6 +10,7 @@
         <module name="api-gateway" />
         <module name="profile-service" />
         <module name="user-service" />
+        <module name="google-service" />
         <module name="netflix-service" />
         <module name="service-discovery-server" />
         <module name="prime-service" />
@@ -17,6 +18,7 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="api-gateway" target="19" />
+      <module name="google-service" target="19" />
       <module name="netflix-service" target="19" />
       <module name="prime-service" target="19" />
       <module name="profile-service" target="19" />
@@ -27,6 +29,7 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="api-gateway" options="-parameters" />
+      <module name="google-service" options="-parameters" />
       <module name="netflix-service" options="-parameters" />
       <module name="prime-service" options="-parameters" />
       <module name="profile-service" options="-parameters" />

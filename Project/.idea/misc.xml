@@ -9,6 +9,7 @@
         <option value="$PROJECT_DIR$/api-gateway/pom.xml" />
         <option value="$PROJECT_DIR$/netflix-service/pom.xml" />
         <option value="$PROJECT_DIR$/prime-service/pom.xml" />
+        <option value="$PROJECT_DIR$/google-service/pom.xml" />
       </list>
     </option>
   </component>
