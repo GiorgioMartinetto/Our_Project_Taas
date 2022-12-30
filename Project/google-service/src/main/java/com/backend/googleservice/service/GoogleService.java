@@ -13,8 +13,9 @@ public class GoogleService {
 
     private final WebClient.Builder webClientBuilder;
     public void userAuth(Map<String,Object> attributes){
-        String name = String.valueOf(attributes.get("email"));
-        System.out.println(name);
+        String name = String.valueOf(attributes.get("name"));
+        String email = String.valueOf(attributes.get("email"));
+        System.out.println(email+"\n"+name);
 
     }
 }
