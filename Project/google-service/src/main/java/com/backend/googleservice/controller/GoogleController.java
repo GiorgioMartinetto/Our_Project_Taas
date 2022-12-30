@@ -1,15 +1,15 @@
 package com.backend.googleservice.controller;
 
 import com.backend.googleservice.service.GoogleService;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.parameters.P;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import java.security.Principal;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/googleAuth")
@@ -20,9 +20,10 @@ public class GoogleController {
 
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
-    public void userAuth(Principal principal){
+    public void userAuth(@AuthenticationPrincipal  OAuth2AuthenticatedPrincipal principal){
         System.out.println("Registration OK ...");
-        googleService.userAuth(principal);
+        Map<String, Object> attributes = principal.getAttributes();
+        googleService.userAuth(attributes);
     }
 
 }
