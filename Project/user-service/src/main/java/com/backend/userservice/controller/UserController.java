@@ -13,10 +13,10 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/create")
+    @PostMapping("/registration")
     @ResponseStatus(HttpStatus.CREATED)
-    public void userCreate(@RequestBody UserRequest userRequest){
-        userService.createUser(userRequest);
+    public void userRegistration(@RequestBody UserRequest userRequest){
+        userService.userRegistration(userRequest);
     }
 
 

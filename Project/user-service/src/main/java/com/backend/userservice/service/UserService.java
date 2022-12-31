@@ -14,6 +14,8 @@ import reactor.core.publisher.Mono;
 
 
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -25,26 +27,53 @@ public class UserService {
 
     private final WebClient.Builder webClientBuilder;
 
-    public void createUser(UserRequest userRequest){
-        User user = User.builder()
-                .userName(userRequest.getUserName())
-                .email(userRequest.getEmail())
-                .password(userRequest.getPassword())
-                .build();
-        userRepository.save(user);
+    public void userRegistration(UserRequest userRequest){
+        if(validateEmail(userRequest.getEmail())){
+            if(emailExist(userRequest.getEmail())){
+                if(userExist(userRequest.getUserName())){
+                    User user = User.builder()
+                            .userName(userRequest.getUserName())
+                            .email(userRequest.getEmail())
+                            .password(userRequest.getPassword())
+                            .build();
+                    userRepository.save(user);
 
-        createProfile(user.getUserName(), "MyProfile");
+                    createProfile(user.getUserName(), "MyProfile");
 
 
-        log.info("User {} is create", user.getId());
+                    log.info("User {} is create", user.getId());
+
+                } else {
+                    System.out.println("User already exist ...");
+                }
+            } else {
+                System.out.println("Email already exist ...");
+            }
+        }else{
+            System.out.println("Email format is not right ...");
+        }
+    }
+
+    private boolean validateEmail(String email){
+        String EMAIL_PATTERN = "^[_A-Za-z0-9-+]+ " +
+                "(.[_A-Za-z0-9-]+)*@" + "[A-Za-z0-9-]+(.[A-Za-z0-9]+)* " +
+                "(.[A-Za-z]{2,})$";
+        Pattern pattern = Pattern.compile(EMAIL_PATTERN);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+    }
+
+    private boolean emailExist(String email){
+        Optional<User> user = userRepository.getUserByEmail(email);
+        return !user.isPresent();
+    }
+
+    private boolean userExist(String username){
+        Optional<User> user = userRepository.getUserByUserName(username);
+        return !user.isPresent();
     }
 
 
-    /*
-    * recuperare l'id
-    * impacchettarlo con il nome del profilo
-    * spedirlo al microservizio del profilo
-    * */
     private void createProfile(String ownerName, String profileName){
         ProfileRequest profileRequest = ProfileRequest.builder()
                 .profileName(profileName)
