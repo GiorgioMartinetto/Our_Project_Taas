@@ -27,31 +27,26 @@ public class UserService {
 
     private final WebClient.Builder webClientBuilder;
 
-    public void userRegistration(UserRequest userRequest){
-        if(validateEmail(userRequest.getEmail())){
-            if(emailExist(userRequest.getEmail())){
-                if(userExist(userRequest.getUserName())){
-                    User user = User.builder()
-                            .userName(userRequest.getUserName())
-                            .email(userRequest.getEmail())
-                            .password(userRequest.getPassword())
-                            .build();
-                    userRepository.save(user);
+    public void userRegistration(UserRequest userRequest) throws IllegalArgumentException{
+        if (!validateEmail(userRequest.getEmail()))
+            throw new IllegalArgumentException("Invalid email format");
+        if (!emailExist(userRequest.getEmail()))
+             throw new IllegalArgumentException("email already exists");
+        if (!userExist(userRequest.getUserName()))
+            throw new IllegalArgumentException("username already exists");
+        if (!validatePassword(userRequest.getPassword()))
+            throw new IllegalArgumentException("Invalid password format");
+            
+        User user = User.builder()
+                .userName(userRequest.getUserName())
+                .email(userRequest.getEmail())
+                .password(userRequest.getPassword())
+            .build();
+        userRepository.save(user);
 
-                    createProfile(user.getUserName(), "MyProfile");
+        createProfile(user.getUserName(), "MyProfile");
+        log.info("User {} is create", user.getId());
 
-
-                    log.info("User {} is create", user.getId());
-
-                } else {
-                    System.out.println("User already exist ...");
-                }
-            } else {
-                System.out.println("Email already exist ...");
-            }
-        }else{
-            System.out.println("Email format is not right ...");
-        }
     }
 
     /**
@@ -95,61 +90,80 @@ public class UserService {
 
     }
 
-    public void updateEmail(EmailUpdateRequest emailUpdateRequest){
+    public void updateEmail(EmailUpdateRequest emailUpdateRequest) throws IllegalArgumentException {
         Optional<User> user = userRepository.findById(emailUpdateRequest.getId());
 
-        if(user.isPresent()) {
-            User _user = user.get();
-            _user.setEmail(emailUpdateRequest.getEmail()); //TODO:Inseire il controllo sulla mail
-            userRepository.save(_user);
-        }else{
+        if (!user.isPresent()) 
             throw new IllegalArgumentException("User id invalid");
-        }
+        if (!validateEmail(emailUpdateRequest.getEmail()))        
+            throw new IllegalArgumentException("invalid EmailUpdateRequest");
 
+        User _user = user.get();
+        _user.setEmail(emailUpdateRequest.getEmail());
+        userRepository.save(_user);
     }
 
-    public void updatePassword(PasswordUpdateRequest passwordUpdateRequest){
+    public void updatePassword(PasswordUpdateRequest passwordUpdateRequest) throws IllegalArgumentException {
         Optional<User> user = userRepository.findById(passwordUpdateRequest.getId());
 
-        if(user.isPresent()) {
-            User _user = user.get();
-            if(_user.getPassword().equals(passwordUpdateRequest.getOldPassword()) &&
-                !_user.getPassword().equals(passwordUpdateRequest.getNewPassword())){
-                _user.setPassword(passwordUpdateRequest.getNewPassword());
-                userRepository.save(_user);
-            } else {
-                throw new IllegalArgumentException("Invalid password");
-            }
-
-        }else{
+        if (!user.isPresent()) 
             throw new IllegalArgumentException("User id invalid");
-        }
+            
+        User _user = user.get();
+        boolean oldPasswordIsCorrect = _user.getPassword().equals(passwordUpdateRequest.getOldPassword());
+        boolean newPasswordIsDifferentFromOldPassword = !_user.getPassword().equals(passwordUpdateRequest.getNewPassword());
+        boolean validNewPassword = validatePassword(passwordUpdateRequest.getNewPassword()); 
+        if(!oldPasswordIsCorrect)
+            throw new IllegalArgumentException("old password is incorrect");
+        if (!newPasswordIsDifferentFromOldPassword)
+            throw new IllegalArgumentException("new password must be different from old one");
+        if (!validNewPassword)
+            throw new IllegalArgumentException("new password invalid format");
+        
+        _user.setPassword(passwordUpdateRequest.getNewPassword());
+        userRepository.save(_user);
+    }
 
+    /**
+     * 
+     * @param password
+     * @return true if the password is in a valid format, false otherwise
+     * @implNote ^                        # start of line
+        (?=.*[0-9])                       # positive lookahead, digit [0-9]
+        (?=.*[a-z])                       # positive lookahead, one lowercase character [a-z]
+        (?=.*[A-Z])                       # positive lookahead, one uppercase character [A-Z]
+        (?=.*[!@#–[{}]:',?/*~$^+=<>])     # positive lookahead, one of the special character in this [..]
+        .                                 # matches anything
+        {8,30}                            # length at least 8 characters and maximum of 20 characters
+        $                                 # end of li
+     */
+    private boolean validatePassword(String password) {
+        /* String regex="^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#–[{}]:',?/*~$^+=<>]).{8,30}$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(password);
+        return matcher.matches(); */
+        return true;
     }
 
     public void unsubscribeUser(UnsubscribeUserRequest unsubscribeUserRequest){
         Optional<User> user = userRepository.getUserByUserName(unsubscribeUserRequest.getUserName());
 
-        if(user.isPresent()){
-            User _user = user.get();
-            if( _user.getPassword().equals(unsubscribeUserRequest.getPassword()) ){
-
-                webClientBuilder.build().post()
-                        .uri("http://profile-service/api/profile/unsubscription",
-                                uriBuilder -> uriBuilder.build())
-                        .body(Mono.just(_user.getUserName()), String.class)
-                        .retrieve()
-                        .bodyToMono(Void.class)
-                        .block();
-
-                userRepository.delete(_user);
-            } else {
-                throw new IllegalArgumentException("Something went wrong!");
-            }
-
-        } else {
+        if(!user.isPresent())
             throw new IllegalArgumentException("Something went wrong!");
-        }
+            
+        User _user = user.get();
+        
+        if(!_user.getPassword().equals(unsubscribeUserRequest.getPassword()))
+            throw new IllegalArgumentException("Something went wrong!");
+
+        webClientBuilder.build().post()
+            .uri("http://profile-service/api/profile/unsubscription",
+                    uriBuilder -> uriBuilder.build())
+            .body(Mono.just(_user.getUserName()), String.class)
+            .retrieve()
+            .bodyToMono(Void.class)
+            .block();
+        userRepository.delete(_user);
     }
 
     public User getUserByUser(String email){
