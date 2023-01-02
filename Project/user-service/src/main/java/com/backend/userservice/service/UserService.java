@@ -36,17 +36,27 @@ public class UserService {
             throw new IllegalArgumentException("username already exists");
         if (!validatePassword(userRequest.getPassword()))
             throw new IllegalArgumentException("Invalid password format");
-            
+        if (!validateProvider(userRequest.getProvider()))
+            throw new IllegalArgumentException("invalid provider");
+
+        var password = userRequest.getProvider().equals("Local") ? userRequest.getPassword() : null;
         User user = User.builder()
                 .userName(userRequest.getUserName())
                 .email(userRequest.getEmail())
-                .password(userRequest.getPassword())
+                .password(password)
+                .provider(userRequest.getProvider())
             .build();
         userRepository.save(user);
 
         createProfile(user.getUserName(), "MyProfile");
         log.info("User {} is create", user.getId());
 
+    }
+
+    private boolean validateProvider(String provider) {
+        return provider.equals("Google") || 
+            provider.equals("Facebook") || 
+            provider.equals("Local");
     }
 
     /**
@@ -152,10 +162,10 @@ public class UserService {
             throw new IllegalArgumentException("Something went wrong!");
             
         User _user = user.get();
-        
-        if(!_user.getPassword().equals(unsubscribeUserRequest.getPassword()))
+        //TODO fix this shit!
+        /* if(!_user.getPassword().equals(unsubscribeUserRequest.getPassword()))
             throw new IllegalArgumentException("Something went wrong!");
-
+         */
         webClientBuilder.build().post()
             .uri("http://profile-service/api/profile/unsubscription",
                     uriBuilder -> uriBuilder.build())

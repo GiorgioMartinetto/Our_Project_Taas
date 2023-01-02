@@ -29,4 +29,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     private Set<Subscription> subscriptions;
 
+    @Column(name = "provider")
+    private String provider;
+
 }
