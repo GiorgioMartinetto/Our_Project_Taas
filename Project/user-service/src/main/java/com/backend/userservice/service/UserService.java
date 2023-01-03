@@ -32,8 +32,6 @@ public class UserService {
             throw new IllegalArgumentException("Invalid email format");
         if (!emailExist(userRequest.getEmail()))
              throw new IllegalArgumentException("email already exists");
-        if (!userExist(userRequest.getUserName()))
-            throw new IllegalArgumentException("username already exists");
         if (!validatePassword(userRequest.getPassword()))
             throw new IllegalArgumentException("Invalid password format");
         if (!validateProvider(userRequest.getProvider()))
@@ -48,9 +46,26 @@ public class UserService {
             .build();
         userRepository.save(user);
 
-        createProfile(user.getUserName(), "MyProfile");
+        createProfile(user.getEmail(), "MyProfile");
         log.info("User {} is create", user.getId());
+    }
 
+    public void userRegistrationGoogle(UserGoogleDTO userGoogleDTO) throws IllegalArgumentException{
+        if (!emailExist(userGoogleDTO.getEmail()))
+            throw new IllegalArgumentException("email already exists");
+        if (!validateProvider(userGoogleDTO.getProvider()))
+            throw new IllegalArgumentException("invalid provider");
+
+        User user = User.builder()
+                .userName(userGoogleDTO.getUserName())
+                .email(userGoogleDTO.getEmail())
+                .password(null)
+                .provider(userGoogleDTO.getProvider())
+                .build();
+        userRepository.save(user);
+
+        createProfile(user.getEmail(), "MyProfile");
+        log.info("User {} is create", user.getId());
     }
 
     private boolean validateProvider(String provider) {
@@ -76,16 +91,11 @@ public class UserService {
         return !user.isPresent();
     }
 
-    private boolean userExist(String username){
-        Optional<User> user = userRepository.getUserByUserName(username);
-        return !user.isPresent();
-    }
 
-
-    private void createProfile(String ownerName, String profileName){
+    private void createProfile(String ownerEmail, String profileName){
         ProfileRequest profileRequest = ProfileRequest.builder()
                 .profileName(profileName)
-                .ownerName(ownerName)
+                .ownerEmail(ownerEmail)
                 .build();
 
         System.out.println("Default Profile ...");

@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ProfileRequest {
     private String profileName;
-    private String ownerName;
+    private String ownerEmail;
 
 }

@@ -22,11 +22,11 @@ public class GoogleController {
 
     @GetMapping()
     @ResponseStatus(HttpStatus.OK)
-    public Principal userAuth(@AuthenticationPrincipal  OAuth2AuthenticatedPrincipal principal, Principal p){
+    public void userAuth(@AuthenticationPrincipal  OAuth2AuthenticatedPrincipal principal){
         System.out.println("Registration OK ...");
         Map<String, Object> attributes = principal.getAttributes();
         googleService.userAuth(attributes);
-        return p;
+
     }
 
 }

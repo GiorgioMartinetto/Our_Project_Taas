@@ -22,7 +22,7 @@ public class ProfileService {
     public void createProfile(ProfileRequest profileRequest){
         Profile _profile = Profile.builder()
                 .profileName(profileRequest.getProfileName())
-                .ownerName(profileRequest.getOwnerName())
+                .ownerEmail(profileRequest.getOwnerEmail())
                 .build();
 
         profileRepository.save(_profile);
@@ -31,7 +31,7 @@ public class ProfileService {
     }
 
     public void updateProfileName(ProfileRequest profileRequest){
-        Optional<Profile> profile = profileRepository.getProfileByOwnerName(profileRequest.getOwnerName());
+        Optional<Profile> profile = profileRepository.getProfileByOwnerEmail(profileRequest.getOwnerEmail());
 
         if(profile.isPresent()){
             Profile _profile = profile.get();
@@ -42,18 +42,19 @@ public class ProfileService {
         }
     }
 
+        //TODO:DEVE ESSERCI SEMPRE UN PROFILO ESISTENTE.
     public void deleteProfile(ProfileRequest profileRequest){
         try{
-            profileRepository.deleteProfileByProfileNameAndOwnerName(
-                    profileRequest.getProfileName(), profileRequest.getOwnerName());
+            profileRepository.deleteProfileByProfileNameAndOwnerEmail(
+                    profileRequest.getProfileName(), profileRequest.getOwnerEmail());
 
         }catch (Exception e){
             System.out.println("Profile deletion went wrong!");
         }
     }
 
-    public void unsubscriptionUser(String name){
-        profileRepository.deleteAllByOwnerName(name);
+    public void unsubscriptionUser(String email){
+        profileRepository.deleteAllByOwnerEmail(email);
     }
 
 }

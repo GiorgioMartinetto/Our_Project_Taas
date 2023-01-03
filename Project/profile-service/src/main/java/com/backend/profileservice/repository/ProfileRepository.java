@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface ProfileRepository extends JpaRepository<Profile,Long> {
-    Optional<Profile> getProfileByOwnerName(String owner);
-    void deleteProfileByProfileNameAndOwnerName(String profileName, String ownerName);
+    Optional<Profile> getProfileByOwnerEmail(String ownerEmail);
+    void deleteProfileByProfileNameAndOwnerEmail(String profileName, String ownerEmail);
 
-    void deleteAllByOwnerName(String name);
+    void deleteAllByOwnerEmail(String email);
 }

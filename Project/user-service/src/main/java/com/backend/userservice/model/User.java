@@ -1,12 +1,13 @@
 package com.backend.userservice.model;
 
 import lombok.*;
+import org.springframework.lang.Nullable;
 
 import java.util.Set;
 
 import javax.persistence.*;
 
-@Entity
+@Entity(name = "User")
 @Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,13 +18,14 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_name", unique = true)
+    @Column(name = "user_name")
     private String userName;
 
     @Column(name = "email", unique = true)
     private String email;
 
     @Column(name = "password")
+    @Nullable
     private String password;
 
     @OneToMany(mappedBy = "user")

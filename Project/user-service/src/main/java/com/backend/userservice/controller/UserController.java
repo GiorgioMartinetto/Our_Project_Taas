@@ -38,4 +38,9 @@ public class UserController {
     public void unsubscribeUser(@RequestBody UnsubscribeUserRequest unsubscribeUserRequest){
         userService.unsubscribeUser(unsubscribeUserRequest);
     }
+
+    @PostMapping("/registerWithGoogle")
+    public void registerWithGoogle(@RequestBody UserGoogleDTO userGoogleDTO){
+        userService.userRegistrationGoogle(userGoogleDTO);
+    }
 }

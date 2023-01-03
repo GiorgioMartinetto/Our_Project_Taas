@@ -20,7 +20,7 @@ public class Profile {
     @Column(name = "profile_name")
     private String profileName;
 
-    @Column(name = "owenr_name")
-    private String ownerName;
+    @Column(name = "owenr_email")
+    private String ownerEmail;
 
 }
