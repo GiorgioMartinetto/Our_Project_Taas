@@ -1,0 +1,112 @@
+version: "3"
+services:
+  service-discovery-server:
+    container_name: service-discovery-server
+    image: service-discovery-server
+    ports:
+      - "8761:8761"
+    networks:
+      - backendnet
+  api-gateway:
+    container_name: api-gateway
+    image: api-gateway
+    environment:
+      - eureka.client.serviceUrl.defaultZone=http://service-discovery-server:8761/eureka/
+    ports:
+      - "8080:8080"
+    depends_on:
+      - service-discovery-server
+    networks:
+      - backendnet
+  dbpostgresql:
+    container_name: postgres
+    image: "postgres"
+    ports:
+      - "5432:5432"
+    networks:
+      - backendnet
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      restart: unless-stopped
+
+  pgadmin:
+    container_name: pgadmin4_container
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+      PGADMIN_LISTEN_PORT: 50
+    ports:
+      - "5050:50"
+    depends_on:
+      - dbpostgresql
+    networks:
+      - backendnet
+
+  user-service:
+    container_name: user-service
+    image: user-service #Ricordarsi assolutamente che il nome dell'image deve essere assolutamente concorde con quello del 'docker image build -t user-service'
+    ports:
+      - "8081:8081"
+    depends_on:
+      - dbpostgresql
+      - service-discovery-server
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - eureka.client.serviceUrl.defaultZone=http://service-discovery-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://dbpostgresql:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    deploy:
+      restart_policy:
+        condition: on-failure
+    networks:
+      - backendnet
+
+  profile-service:
+    container_name: profile-service
+    image: profile-service #Ricordarsi assolutamente che il nome dell'image deve essere assolutamente concorde con quello del 'docker image build -t user-service'
+    ports:
+      - "8082:8082"
+    depends_on:
+      - dbpostgresql
+      - service-discovery-server
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - eureka.client.serviceUrl.defaultZone=http://service-discovery-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://dbpostgresql:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    deploy:
+      restart_policy:
+        condition: on-failure
+    networks:
+      - backendnet
+  google-service:
+    container_name: google-service
+    image: google-service #Ricordarsi assolutamente che il nome dell'image deve essere assolutamente concorde con quello del 'docker image build -t user-service'
+    ports:
+      - "9191:9191"
+    depends_on:
+      - dbpostgresql
+      - service-discovery-server
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - eureka.client.serviceUrl.defaultZone=http://service-discovery-server:8761/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://dbpostgresql:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    deploy:
+      restart_policy:
+        condition: on-failure
+    networks:
+      - backendnet
+networks:
+  backendnet:
+    driver: bridge
