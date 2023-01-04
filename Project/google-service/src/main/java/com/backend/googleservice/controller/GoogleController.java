@@ -20,13 +20,22 @@ public class GoogleController {
 
     private final GoogleService googleService;
 
-    @GetMapping()
+    @GetMapping("/registration")
     @ResponseStatus(HttpStatus.OK)
     public void userAuth(@AuthenticationPrincipal  OAuth2AuthenticatedPrincipal principal){
         System.out.println("Registration OK ...");
         Map<String, Object> attributes = principal.getAttributes();
         googleService.userAuth(attributes);
 
+    }
+
+    @GetMapping("/login")
+    @ResponseStatus(HttpStatus.OK)
+    public boolean loginAuth(@AuthenticationPrincipal  OAuth2AuthenticatedPrincipal principal){
+        System.out.println("Login OK ...");
+        Map<String, Object> attributes = principal.getAttributes();
+        System.out.println("====================== "+ String.valueOf(attributes.get("email_verified")).equals("true"));
+        return Boolean.parseBoolean(String.valueOf(attributes.get("email_verified")));
     }
 
 }

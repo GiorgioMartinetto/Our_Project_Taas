@@ -53,7 +53,7 @@ public class SubscriptionService {
 
         if(control){
             System.out.println(subscriptionAuthDto.getUserName());
-            User user = userService.getUserByUser(subscriptionAuthDto.getUserName());
+            User user = userService.getUserByUserEmail(subscriptionAuthDto.getUserName());
             if(user != null){
                 System.out.println("Authentication OK ...");
                 Subscription subscription = Subscription.builder()

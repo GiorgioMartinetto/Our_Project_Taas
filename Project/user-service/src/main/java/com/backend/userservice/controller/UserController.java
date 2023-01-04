@@ -40,7 +40,22 @@ public class UserController {
     }
 
     @PostMapping("/registerWithGoogle")
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public void registerWithGoogle(@RequestBody UserGoogleDTO userGoogleDTO){
         userService.userRegistrationGoogle(userGoogleDTO);
+    }
+
+    @PostMapping("/login")
+    @ResponseStatus(HttpStatus.OK)
+    public boolean userLogin(@RequestBody UserLoginRequest userLoginRequest){
+        System.out.println("Login ...");
+        return userService.userLogin(userLoginRequest);
+    }
+
+    @GetMapping("/loginWithGoogle")
+    @ResponseStatus(HttpStatus.OK)
+    public boolean userLoginWithGoogle(){
+        System.out.println("Login with Google ...");
+        return userService.userLoginWithGoogle();
     }
 }

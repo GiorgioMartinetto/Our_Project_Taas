@@ -93,15 +93,10 @@ services:
     ports:
       - "9191:9191"
     depends_on:
-      - dbpostgresql
       - service-discovery-server
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - eureka.client.serviceUrl.defaultZone=http://service-discovery-server:8761/eureka/
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://dbpostgresql:5432/postgres
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=admin
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     deploy:
       restart_policy:
         condition: on-failure

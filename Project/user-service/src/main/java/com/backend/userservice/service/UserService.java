@@ -86,6 +86,11 @@ public class UserService {
         return matcher.matches();
     }
 
+    /**
+     *
+     * @param email the email that you want to validate
+     * @return true if the email does not exist, false otherwise
+     */
     private boolean emailExist(String email){
         Optional<User> user = userRepository.getUserByEmail(email);
         return !user.isPresent();
@@ -107,7 +112,6 @@ public class UserService {
                 .retrieve()
                 .bodyToMono(Void.class)
                 .block();
-
     }
 
     public void updateEmail(EmailUpdateRequest emailUpdateRequest) throws IllegalArgumentException {
@@ -165,6 +169,23 @@ public class UserService {
         return true;
     }
 
+    public boolean userLogin(UserLoginRequest userLoginRequest){
+        User user = getUserByUserEmail(userLoginRequest.getEmail());
+        if(user != null && user.getPassword().equals(userLoginRequest.getPassword()))
+            return true;
+        else
+            return false;
+    }
+
+    public boolean userLoginWithGoogle(){
+        return Boolean.TRUE.equals(webClientBuilder.build().get()
+                .uri("http://localhost:9191/api/googleAuth/login",
+                        uriBuilder -> uriBuilder.build())
+                .retrieve()
+                .bodyToMono(Boolean.class)
+                .block());
+    }
+
     public void unsubscribeUser(UnsubscribeUserRequest unsubscribeUserRequest){
         Optional<User> user = userRepository.getUserByUserName(unsubscribeUserRequest.getUserName());
 
@@ -186,7 +207,7 @@ public class UserService {
         userRepository.delete(_user);
     }
 
-    public User getUserByUser(String email){
+    public User getUserByUserEmail(String email){
         Optional<User> user = userRepository.getUserByUserName(email);
         if(user.isPresent()){
             User _user = user.get();
