@@ -2,10 +2,10 @@
 # guida all'uso:
 
 per guardare pg-admin:
-- nome database -> user-service
+- nome database -> postgres
 - username -> postgres
 - password -> admin
-- hostname -> postgres
+- hostname -> dbpostgresql
 
 far partire:
 - service-discovery-server

@@ -170,8 +170,12 @@ public class UserService {
     }
 
     public boolean userLogin(UserLoginRequest userLoginRequest){
-        User user = getUserByUserEmail(userLoginRequest.getEmail());
-        if(user != null && user.getPassword().equals(userLoginRequest.getPassword()))
+        Optional<User> opt_user = getUserByUserEmail(userLoginRequest.getEmail());
+        System.out.println();
+        //System.out.println("---------------User email= "+user.getEmail()+"\n------------User password="+user.getPassword());
+        //System.out.println("---------------User email= "+userLoginRequest.getEmail()+"\n------------User password="+userLoginRequest.getPassword());
+        
+        if(opt_user.isPresent()  && opt_user.get().getPassword().equals(userLoginRequest.getPassword()))
             return true;
         else
             return false;
@@ -207,14 +211,10 @@ public class UserService {
         userRepository.delete(_user);
     }
 
-    public User getUserByUserEmail(String email){
-        Optional<User> user = userRepository.getUserByUserName(email);
-        if(user.isPresent()){
-            User _user = user.get();
-            return _user;
-        } else {
-            return null;
-        }
+    public Optional<User> getUserByUserEmail(String email){
+        return userRepository.getUserByEmail(email);
+        
+
     }
 
 
