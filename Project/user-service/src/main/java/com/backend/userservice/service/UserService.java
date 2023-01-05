@@ -50,6 +50,7 @@ public class UserService {
         log.info("User {} is create", user.getId());
     }
 
+    /* 
     public void userRegistrationGoogle(UserGoogleDTO userGoogleDTO) throws IllegalArgumentException{
         if (!emailExist(userGoogleDTO.getEmail()))
             throw new IllegalArgumentException("email already exists");
@@ -67,6 +68,7 @@ public class UserService {
         createProfile(user.getEmail(), "MyProfile");
         log.info("User {} is create", user.getId());
     }
+        */
 
     private boolean validateProvider(String provider) {
         return provider.equals("Google") || 
@@ -182,12 +184,25 @@ public class UserService {
     }
 
     public boolean userLoginWithGoogle(){
-        return Boolean.TRUE.equals(webClientBuilder.build().get()
-                .uri("http://localhost:9191/api/googleAuth/login",
-                        uriBuilder -> uriBuilder.build())
-                .retrieve()
-                .bodyToMono(Boolean.class)
-                .block());
+
+        //Ceck val account
+        boolean valid_google_account=Boolean.TRUE.equals(webClientBuilder.build().get()
+        .uri("http://localhost:9191/api/googleAuth/login",
+                uriBuilder -> uriBuilder.build())
+        .retrieve()
+        .bodyToMono(Boolean.class)
+        .block());
+        if(!valid_google_account)
+            return  false;
+   
+        //ceck registration 
+        if(!getUserByUserEmail().isPresent())
+        // register
+
+        //load profile
+        
+        
+        return true;
     }
 
     public void unsubscribeUser(UnsubscribeUserRequest unsubscribeUserRequest){

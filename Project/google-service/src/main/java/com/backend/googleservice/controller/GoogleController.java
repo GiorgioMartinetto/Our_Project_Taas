@@ -19,7 +19,7 @@ import java.util.Map;
 public class GoogleController {
 
     private final GoogleService googleService;
-
+/* 
     @GetMapping("/registration")
     @ResponseStatus(HttpStatus.OK)
     public void userAuth(@AuthenticationPrincipal  OAuth2AuthenticatedPrincipal principal){
@@ -28,7 +28,7 @@ public class GoogleController {
         googleService.userAuth(attributes);
 
     }
-
+     */
     @GetMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     public boolean loginAuth(@AuthenticationPrincipal  OAuth2AuthenticatedPrincipal principal){
