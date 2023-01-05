@@ -1,5 +1,6 @@
 package com.backend.googleservice.controller;
 
+import com.backend.googleservice.dto.UserGoogleDTO;
 import com.backend.googleservice.service.GoogleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,11 +32,10 @@ public class GoogleController {
      */
     @GetMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    public boolean loginAuth(@AuthenticationPrincipal  OAuth2AuthenticatedPrincipal principal){
+    public void loginAuth(@AuthenticationPrincipal  OAuth2AuthenticatedPrincipal principal){
         System.out.println("Login OK ...");
         Map<String, Object> attributes = principal.getAttributes();
-        System.out.println("====================== "+ String.valueOf(attributes.get("email_verified")).equals("true"));
-        return Boolean.parseBoolean(String.valueOf(attributes.get("email_verified")));
+        googleService.userLogin(attributes);
     }
 
 }

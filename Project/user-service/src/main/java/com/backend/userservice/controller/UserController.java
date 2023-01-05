@@ -39,12 +39,6 @@ public class UserController {
         userService.unsubscribeUser(unsubscribeUserRequest);
     }
 
-    @PostMapping("/registerWithGoogle")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public void registerWithGoogle(@RequestBody UserGoogleDTO userGoogleDTO){
-        userService.userRegistrationGoogle(userGoogleDTO);
-    }
-
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     public boolean userLogin(@RequestBody UserLoginRequest userLoginRequest){
@@ -52,12 +46,12 @@ public class UserController {
         return userService.userLogin(userLoginRequest);
     }
 
-    @GetMapping("/loginWithGoogle")
+    @PostMapping("/loginWithGoogle")
     @ResponseStatus(HttpStatus.OK)
-    public boolean userLoginWithGoogle(){
+    public boolean userLoginWithGoogle(@RequestBody UserGoogleDTO userGoogleDTO){
         System.out.println("Login with Google ...");
 
         
-        return userService.userLoginWithGoogle();
+        return userService.userLoginWithGoogle(userGoogleDTO);
     }
 }
