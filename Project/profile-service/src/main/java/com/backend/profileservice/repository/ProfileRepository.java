@@ -10,4 +10,6 @@ public interface ProfileRepository extends JpaRepository<Profile,Long> {
     void deleteProfileByProfileNameAndOwnerEmail(String profileName, String ownerEmail);
 
     void deleteAllByOwnerEmail(String email);
+
+    long countByOwnerEmail(String email);    
 }

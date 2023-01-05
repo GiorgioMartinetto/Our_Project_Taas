@@ -20,14 +20,17 @@ public class ProfileService {
     private final ProfileRepository profileRepository;
 
     public void createProfile(ProfileRequest profileRequest){
-        Profile _profile = Profile.builder()
+        if (profileRepository.countByOwnerEmail(profileRequest.getOwnerEmail()) < 4) {
+            Profile _profile = Profile.builder()
                 .profileName(profileRequest.getProfileName())
                 .ownerEmail(profileRequest.getOwnerEmail())
                 .build();
 
-        profileRepository.save(_profile);
+            profileRepository.save(_profile);
 
-        log.info(_profile.toString());
+            log.info(_profile.toString());
+        } else 
+            log.info("you cannot create more than 4 profiles");
     }
 
     public void updateProfileName(ProfileRequest profileRequest){
@@ -37,18 +40,23 @@ public class ProfileService {
             Profile _profile = profile.get();
             _profile.setProfileName(profileRequest.getProfileName());
             profileRepository.save(_profile);
-        }else{
+        } else {
             throw new IllegalArgumentException("Profile is not present ...");
         }
     }
 
         //TODO:DEVE ESSERCI SEMPRE UN PROFILO ESISTENTE.
     public void deleteProfile(ProfileRequest profileRequest){
-        try{
-            profileRepository.deleteProfileByProfileNameAndOwnerEmail(
+        try {
+            if (profileRepository.countByOwnerEmail(profileRequest.getOwnerEmail()) > 1) {
+                profileRepository.deleteProfileByProfileNameAndOwnerEmail(
                     profileRequest.getProfileName(), profileRequest.getOwnerEmail());
+                log.info("deleted profile with name " + profileRequest.getProfileName() + 
+                    " and ownerEmail " + profileRequest.getOwnerEmail());
+            } else 
+                log.info("you must have at least 1 active profile");
 
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Profile deletion went wrong!");
         }
     }
