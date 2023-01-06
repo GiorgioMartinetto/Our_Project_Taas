@@ -70,8 +70,8 @@ services:
     depends_on:
       - mongo
     networks:
-      - backendnet
-
+      - backendnetasdfsdfdsfds
+asdasdas
   user-service:
     container_name: user-service
     image: user-service #Ricordarsi assolutamente che il nome dell'image deve essere assolutamente concorde con quello del 'docker image build -t user-service'
