@@ -7,8 +7,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import java.util.List;
 import java.util.Optional;
+
 
 
 @Service
@@ -21,16 +22,22 @@ public class ProfileService {
 
     public void createProfile(ProfileRequest profileRequest){
         if (profileRepository.countByOwnerEmail(profileRequest.getOwnerEmail()) < 4) {
-            Profile _profile = Profile.builder()
-                .profileName(profileRequest.getProfileName())
-                .ownerEmail(profileRequest.getOwnerEmail())
-                .build();
+            List<Profile> profiles = profileRepository.getProfilesByOwnerEmail(profileRequest.getOwnerEmail());
+            List<String> names = profiles.stream().map(Profile::getProfileName).toList();
 
-            profileRepository.save(_profile);
-
-            log.info(_profile.toString());
-        } else 
+            if(!names.contains(profileRequest.getProfileName())) {
+                Profile _profile = Profile.builder()
+                        .profileName(profileRequest.getProfileName())
+                        .ownerEmail(profileRequest.getOwnerEmail())
+                        .build();
+                profileRepository.save(_profile);
+                log.info(_profile.toString());
+            } else {
+                log.info("Il nome del profilo è già in uso");
+            }
+        } else {
             log.info("you cannot create more than 4 profiles");
+        }
     }
 
     public void updateProfileName(ProfileRequest profileRequest){
@@ -45,7 +52,6 @@ public class ProfileService {
         }
     }
 
-        //TODO:DEVE ESSERCI SEMPRE UN PROFILO ESISTENTE.
     public void deleteProfile(ProfileRequest profileRequest){
         try {
             if (profileRepository.countByOwnerEmail(profileRequest.getOwnerEmail()) > 1) {

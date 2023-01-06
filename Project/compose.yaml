@@ -7,6 +7,7 @@ services:
       - "8761:8761"
     networks:
       - backendnet
+
   api-gateway:
     container_name: api-gateway
     image: api-gateway
@@ -18,6 +19,7 @@ services:
       - service-discovery-server
     networks:
       - backendnet
+
   dbpostgresql:
     container_name: postgres
     image: "postgres"
@@ -26,7 +28,7 @@ services:
     networks:
       - backendnet
     environment:
-      POSTGRES_DB: servicies
+      POSTGRES_DB: services
      # POSTGRES_MULTIPLE_DB: postgres,user-service
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin
@@ -47,6 +49,29 @@ services:
     networks:
       - backendnet
 
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: root
+    networks:
+      - backendnet
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - "5151:5151"
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: root
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+    depends_on:
+      - mongo
+    networks:
+      - backendnet
+
   user-service:
     container_name: user-service
     image: user-service #Ricordarsi assolutamente che il nome dell'image deve essere assolutamente concorde con quello del 'docker image build -t user-service'
@@ -58,9 +83,9 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - eureka.client.serviceUrl.defaultZone=http://service-discovery-server:8761/eureka/
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://dbpostgresql:5432/servicies
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://dbpostgresql:5432/services
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=root
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     deploy:
       restart_policy:
@@ -79,9 +104,9 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - eureka.client.serviceUrl.defaultZone=http://service-discovery-server:8761/eureka/
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://dbpostgresql:5432/servicies
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=admin
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://dbpostgresql:5432/services
+      - SPRING_DATASOURCE_USERNAME=admin
+      - SPRING_DATASOURCE_PASSWORD=root
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     deploy:
       restart_policy:
