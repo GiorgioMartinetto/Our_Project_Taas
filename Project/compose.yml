@@ -22,7 +22,7 @@ services:
 
   dbpostgresql:
     container_name: postgres
-    image: "postgres"
+    image: postgres
     ports:
       - "5432:5432"
     networks:
@@ -49,29 +49,11 @@ services:
     networks:
       - backendnet
 
-  mongo:
-    image: mongo
-    restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: user
-      MONGO_INITDB_ROOT_PASSWORD: root
-      MONGO_INITDB_DATABASE: test
-
-  mongo-express:
-    image: mongo-express
-    restart: always
-    ports:
-      - "8081:8081"
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: user
-      ME_CONFIG_MONGODB_ADMINPASSWORD: root
-      ME_CONFIG_MONGODB_URL: mongodb://user:root@mongo:27017/
-
   user-service:
     container_name: user-service
     image: user-service #Ricordarsi assolutamente che il nome dell'image deve essere assolutamente concorde con quello del 'docker image build -t user-service'
     ports:
-      - "8083:8083"
+      - "8081:8081"
     depends_on:
       - dbpostgresql
       - service-discovery-server
@@ -123,7 +105,6 @@ services:
         condition: on-failure
     networks:
       - backendnet
-
   netflix-service:
     container_name: netflix-service
     image: netflix-service #Ricordarsi assolutamente che il nome dell'image deve essere assolutamente concorde con quello del 'docker image build -t user-service'

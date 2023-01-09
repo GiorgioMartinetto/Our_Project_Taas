@@ -33,10 +33,10 @@ public class SubscriptionService {
 
         switch (subscriptionAuthDto.getPlatform()){
             case "netflix":
-                uri = "http://netflix-service/api/netflix";
+                uri = "http://netflix-service/api/netflix/";
                 break;
             case "prime":
-                uri = "http://prime-service/api/prime";
+                uri = "http://prime-service/api/prime/";
                 break;
             default:
                 throw new AuthenticationException("Invalid Platform Value ...");

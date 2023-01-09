@@ -4,18 +4,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import lombok.*;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
 import com.backend.primeservice.dto.AuthUserRequest;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import reactor.core.publisher.Mono;
 
 @Service
+@RequiredArgsConstructor
 public class FakeAmazonService {
+
+    private final ResourceLoader resourceLoader;
+    private static final String FORMAT="classpath:videos/%s.mp4";
     private List<User> users = new ArrayList<>(Arrays.asList(
         User.builder().email("giorgio.martinetto@outlook.it").password("prova1").build(),
         User.builder().email("giorgio.perna@outlook.it").password("prova2").build(),
@@ -25,21 +28,24 @@ public class FakeAmazonService {
     
     public boolean validateUser(AuthUserRequest userRequest){
 
-        
-        
         User _user = User.builder().email(userRequest.getEmail()).password(userRequest.getPassword()).build();
         
         for (User user: users) {
-            if(user.getEmail().equals(_user.getEmail()) && user.getPassword().equals(_user.getPassword()))
-            {
+            if(user.getEmail().equals(_user.getEmail()) && user.getPassword().equals(_user.getPassword())) {
                 System.out.println("Authentication OK ...");
                 return true;
             }
         }
-        
         return false;
     }
+
+    public Mono<Resource> getFilm(String title){
+        return Mono.fromSupplier(()->resourceLoader.
+                getResource(String.format(FORMAT,title)));
+    }
 }
+
+
 
 @NoArgsConstructor
 @AllArgsConstructor
