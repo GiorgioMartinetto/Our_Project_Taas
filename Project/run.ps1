@@ -42,4 +42,4 @@ docker build -t prime-service .
 cd ..
 
 docker image prune -f
-docker compose up
+docker compose up > log.txt

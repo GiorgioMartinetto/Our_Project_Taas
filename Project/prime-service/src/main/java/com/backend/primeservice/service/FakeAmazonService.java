@@ -40,6 +40,7 @@ public class FakeAmazonService {
     }
 
     public Mono<Resource> getFilm(String title){
+        System.out.println("=========== GET FILM ===============");
         return Mono.fromSupplier(()->resourceLoader.
                 getResource(String.format(FORMAT,title)));
     }

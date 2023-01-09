@@ -20,7 +20,7 @@ public class FakePrimeController {
        return  fakeAmazonService.validateUser(userRequest);
     }
 
-    @GetMapping(value = "film/{title}", produces = "video/mp4")
+    @GetMapping(value = "/video/{title}", produces = "video/mp4")
     public Mono<Resource> getVideos(@PathVariable String title, @RequestHeader("Range") String range) {
         System.out.println("range in bytes() : " + range);
         return fakeAmazonService.getFilm(title);
