@@ -17,6 +17,15 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class FakeAmazonService {
 
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Getter
+    @Setter
+    @Builder
+    private class User{
+        private String email;
+        private String password;
+    }
     private final ResourceLoader resourceLoader;
     private static final String FORMAT="classpath:videos/%s.mp4";
     private List<User> users = new ArrayList<>(Arrays.asList(
@@ -48,12 +57,3 @@ public class FakeAmazonService {
 
 
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
-@Builder
-class User{
-    private String email;
-    private String password;
-}

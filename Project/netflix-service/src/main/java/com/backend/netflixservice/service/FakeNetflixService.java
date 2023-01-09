@@ -2,6 +2,7 @@ package com.backend.netflixservice.service;
 
 import com.backend.netflixservice.dto.AuthUserRequest;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.Resource;
@@ -9,6 +10,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -16,6 +18,31 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class FakeNetflixService {
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    private class User{
+        private String email;
+        private String password;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    private class MediaData{
+        private String title;
+        private String plot;
+        private List<String> categories;
+        private int year;
+        private BufferedImage poster;
+        private boolean isSeries;
+    }
+
+
+
 
     private final ResourceLoader resourceLoader;
     private static final String FORMAT="classpath:videos/%s.mp4";
@@ -46,12 +73,5 @@ public class FakeNetflixService {
     
 }
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
-@Builder
-class User{
-    private String email;
-    private String password;
-}
+
+
