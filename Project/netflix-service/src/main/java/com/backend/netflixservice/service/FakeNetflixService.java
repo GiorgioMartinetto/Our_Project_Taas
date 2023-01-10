@@ -23,7 +23,7 @@ public class FakeNetflixService {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    private class User{
+    private static class User{
         private String email;
         private String password;
     }
@@ -32,13 +32,15 @@ public class FakeNetflixService {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    private class MediaData{
+    private static class MediaData{
         private String title;
         private String plot;
         private List<String> categories;
         private int year;
         private BufferedImage poster;
         private boolean isSeries;
+        private String author;
+        private List<String> casts;
     }
 
 
@@ -46,7 +48,7 @@ public class FakeNetflixService {
 
     private final ResourceLoader resourceLoader;
     private static final String FORMAT="classpath:videos/%s.mp4";
-    private List<User> users = new ArrayList<>(Arrays.asList(
+    private final List<User> users = new ArrayList<>(Arrays.asList(
             User.builder().email("giorgio.martinetto@outlook.it").password("prova1").build(),
             User.builder().email("giorgio.perna@outlook.it").password("prova2").build(),
             User.builder().email("marius@outlook.it").password("prova1").build(),
