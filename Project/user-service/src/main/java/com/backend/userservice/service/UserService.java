@@ -5,11 +5,10 @@ import com.backend.userservice.model.User;
 import com.backend.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
 
@@ -107,7 +106,7 @@ public class UserService {
 
         webClientBuilder.build().post()
                 .uri("http://profile-service/api/profile/create",
-                        uriBuilder -> uriBuilder.build())
+                        UriBuilder::build)
                 .body(Mono.just(profileRequest), ProfileRequest.class)
                 .retrieve()
                 .bodyToMono(Void.class)

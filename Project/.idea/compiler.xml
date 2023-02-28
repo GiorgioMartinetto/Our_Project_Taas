@@ -9,8 +9,8 @@
         <outputRelativeToContentRoot value="true" />
         <module name="api-gateway" />
         <module name="profile-service" />
-        <module name="user-service" />
         <module name="google-service" />
+        <module name="user-service" />
         <module name="netflix-service" />
         <module name="service-discovery-server" />
         <module name="prime-service" />
