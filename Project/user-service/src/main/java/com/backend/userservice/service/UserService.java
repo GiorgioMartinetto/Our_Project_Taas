@@ -12,6 +12,7 @@ import org.springframework.web.util.UriBuilder;
 import reactor.core.publisher.Mono;
 
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,6 +27,12 @@ public class UserService {
 
     private final WebClient.Builder webClientBuilder;
 
+    /**
+     *
+     * @param userRequest
+     * @throws IllegalArgumentException
+     * @return void
+     */
     public void userRegistration(UserRequest userRequest) throws IllegalArgumentException{
         if (!validateEmail(userRequest.getEmail()))
             throw new IllegalArgumentException("Invalid email format");
@@ -49,7 +56,12 @@ public class UserService {
         log.info("User {} is create", user.getId());
     }
 
-    
+    /**
+     *
+     * @param userGoogleDTO
+     * @throws IllegalArgumentException
+     * @return void
+     */
     private void userRegistrationGoogle(UserGoogleDTO userGoogleDTO) throws IllegalArgumentException{
         if (!validateProvider(userGoogleDTO.getProvider()))
             throw new IllegalArgumentException("invalid provider");
@@ -65,11 +77,16 @@ public class UserService {
         createProfile(user.getEmail(), "MyProfile");
         log.info("User {} is create", user.getId());
     }
-       
 
+
+    /**
+     *
+     * @param provider
+     * @return true if provides is a valid one, false otherwise
+     */
     private boolean validateProvider(String provider) {
-        return provider.equals("Google") || 
-            provider.equals("Facebook") || 
+        return provider.equals("Google") ||
+            provider.equals("Facebook") ||
             provider.equals("Local");
     }
 
@@ -95,7 +112,12 @@ public class UserService {
         return !user.isPresent();
     }
 
-
+    /**
+     *
+     * @param ownerEmail
+     * @param profileName
+     * @retunr void
+     */
     private void createProfile(String ownerEmail, String profileName){
         ProfileRequest profileRequest = ProfileRequest.builder()
                 .profileName(profileName)
@@ -113,6 +135,12 @@ public class UserService {
                 .block();
     }
 
+    /**
+     *
+     * @param emailUpdateRequest
+     * @throws IllegalArgumentException
+     * @return void
+     */
     public void updateEmail(EmailUpdateRequest emailUpdateRequest) throws IllegalArgumentException {
         Optional<User> user = userRepository.findById(emailUpdateRequest.getId());
 
@@ -126,6 +154,12 @@ public class UserService {
         userRepository.save(_user);
     }
 
+    /**
+     *
+     * @param passwordUpdateRequest
+     * @throws IllegalArgumentException
+     * @return void
+     */
     public void updatePassword(PasswordUpdateRequest passwordUpdateRequest) throws IllegalArgumentException {
         Optional<User> user = userRepository.findById(passwordUpdateRequest.getId());
 
@@ -168,24 +202,35 @@ public class UserService {
         return true;
     }
 
+    /**
+     *
+     * @param userLoginRequest
+     * @return true if user is present and his credentials are valid, false otherwise
+     */
     public boolean userLogin(UserLoginRequest userLoginRequest){
         Optional<User> opt_user = getUserByUserEmail(userLoginRequest.getEmail());
-        System.out.println();
-        //System.out.println("---------------User email= "+user.getEmail()+"\n------------User password="+user.getPassword());
-        //System.out.println("---------------User email= "+userLoginRequest.getEmail()+"\n------------User password="+userLoginRequest.getPassword());
-        
-        if(opt_user.isPresent()  && opt_user.get().getPassword().equals(userLoginRequest.getPassword()))
-            return true;
-        else
-            return false;
+
+        //return opt_user.isPresent()  && Objects.equals(opt_user.get().getPassword(), userLoginRequest.getPassword());
+        return opt_user.isPresent()  && opt_user.get().getPassword().equals(userLoginRequest.getPassword());
     }
 
+    /**
+     * If the user is the first time which log in with Google an account will be created.
+     * However, the creation is skipped and the user will be logged in.
+     * @param userGoogleDTO
+     * @return true
+     */
     public boolean userLoginWithGoogle(UserGoogleDTO userGoogleDTO){
         if(!getUserByUserEmail(userGoogleDTO.getEmail()).isPresent())
             userRegistrationGoogle(userGoogleDTO);
         return true;
     }
 
+    /**
+     *
+     * @param unsubscribeUserRequest
+     * @return void
+     */
     public void unsubscribeUser(UnsubscribeUserRequest unsubscribeUserRequest){
         Optional<User> user = userRepository.getUserByUserName(unsubscribeUserRequest.getUserName());
 
@@ -193,13 +238,13 @@ public class UserService {
             throw new IllegalArgumentException("Something went wrong!");
             
         User _user = user.get();
-        //TODO fix this shit!
+        //TODO
         /* if(!_user.getPassword().equals(unsubscribeUserRequest.getPassword()))
             throw new IllegalArgumentException("Something went wrong!");
          */
         webClientBuilder.build().post()
             .uri("http://profile-service/api/profile/unsubscription",
-                    uriBuilder -> uriBuilder.build())
+                    UriBuilder::build)
             .body(Mono.just(_user.getUserName()), String.class)
             .retrieve()
             .bodyToMono(Void.class)
@@ -207,10 +252,13 @@ public class UserService {
         userRepository.delete(_user);
     }
 
+    /**
+     *
+     * @param email
+     * @return the user
+     */
     public Optional<User> getUserByUserEmail(String email){
         return userRepository.getUserByEmail(email);
-        
-
     }
 
 
