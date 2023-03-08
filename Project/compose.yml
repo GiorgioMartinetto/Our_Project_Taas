@@ -10,7 +10,6 @@ services:
       - backendnet
     environment:
       POSTGRES_DB: services
-     # POSTGRES_MULTIPLE_DB: postgres,user-service
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: root
       restart: unless-stopped

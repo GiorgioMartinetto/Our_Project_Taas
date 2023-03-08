@@ -21,11 +21,10 @@ public class User {
     @Column(name = "user_name")
     private String userName;
 
-    @Column(name = "email", unique = true)
+    @Column(name = "email"/*, unique = true*/)
     private String email;
 
     @Column(name = "password")
-    @Nullable
     private String password;
 
     @OneToMany(mappedBy = "user")

@@ -22,7 +22,7 @@ public class FakeAmazonService {
     @Getter
     @Setter
     @Builder
-    private class User{
+    private static class User{
         private String email;
         private String password;
     }

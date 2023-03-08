@@ -3,8 +3,10 @@ package com.backend.userservice.service;
 import com.backend.userservice.dto.*;
 import com.backend.userservice.model.User;
 import com.backend.userservice.repository.UserRepository;
+import com.sun.istack.NotNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -33,15 +35,15 @@ public class UserService {
      * @throws IllegalArgumentException
      * @return void
      */
-    public void userRegistration(UserRequest userRequest) throws IllegalArgumentException{
+    public void userRegistration(@NotNull UserRequest userRequest){
         if (!validateEmail(userRequest.getEmail()))
-            throw new IllegalArgumentException("Invalid email format");
+            log.info("ERROR: UserService; userRegistration: Invalid email format - {}", userRequest.getEmail());
         if (!emailExist(userRequest.getEmail()))
-             throw new IllegalArgumentException("email already exists");
+            log.info("ERROR: UserService; userRegistration: Email already exists - {}", userRequest.getEmail());
         if (!validatePassword(userRequest.getPassword()))
-            throw new IllegalArgumentException("Invalid password format");
+            log.info("ERROR: UserService; userRegistration: Invalid password format ");
         if (!validateProvider(userRequest.getProvider()))
-            throw new IllegalArgumentException("invalid provider");
+            log.info("ERROR: UserService; userRegistration: Invalid Provider - {}", userRequest.getProvider());
 
         var password = userRequest.getProvider().equals("Local") ? userRequest.getPassword() : null;
         User user = User.builder()
@@ -53,7 +55,7 @@ public class UserService {
         userRepository.save(user);
 
         createProfile(user.getEmail(), "MyProfile");
-        log.info("User {} is create", user.getId());
+        log.info("UserService; userRegistration: user {} is created", user.getId());
     }
 
     /**
@@ -62,9 +64,9 @@ public class UserService {
      * @throws IllegalArgumentException
      * @return void
      */
-    private void userRegistrationGoogle(UserGoogleDTO userGoogleDTO) throws IllegalArgumentException{
+    private void userRegistrationGoogle(@NotNull  UserGoogleDTO userGoogleDTO) throws IllegalArgumentException{
         if (!validateProvider(userGoogleDTO.getProvider()))
-            throw new IllegalArgumentException("invalid provider");
+            log.info("ERROR: UserService; userRegistrationGoogle: Invalid Provider - {}", userGoogleDTO.getProvider());
 
         User user = User.builder()
                 .userName(userGoogleDTO.getUserName())
@@ -75,7 +77,31 @@ public class UserService {
         userRepository.save(user);
 
         createProfile(user.getEmail(), "MyProfile");
-        log.info("User {} is create", user.getId());
+        log.info("UserService; userRegistrationGoogle: user {} is created", user.getId());
+    }
+
+    /**
+     *
+     * @param ownerEmail
+     * @param profileName
+     * @retunr void
+     */
+    private void createProfile(String ownerEmail, String profileName){
+        ProfileRequest profileRequest = ProfileRequest.builder()
+                .profileName(profileName)
+                .ownerEmail(ownerEmail)
+                .build();
+
+        log.info("UserService; createProfile: Send request to profile-service to create a default profile ");
+
+        //TODO:modificare con una richiesta asincrona
+        webClientBuilder.build().post()
+                .uri("http://profile-service/api/profile/create",
+                        UriBuilder::build)
+                .body(Mono.just(profileRequest), ProfileRequest.class)
+                .retrieve()
+                .bodyToMono(Void.class)
+                .block();
     }
 
 
@@ -112,28 +138,7 @@ public class UserService {
         return !user.isPresent();
     }
 
-    /**
-     *
-     * @param ownerEmail
-     * @param profileName
-     * @retunr void
-     */
-    private void createProfile(String ownerEmail, String profileName){
-        ProfileRequest profileRequest = ProfileRequest.builder()
-                .profileName(profileName)
-                .ownerEmail(ownerEmail)
-                .build();
 
-        System.out.println("Default Profile ...");
-
-        webClientBuilder.build().post()
-                .uri("http://profile-service/api/profile/create",
-                        UriBuilder::build)
-                .body(Mono.just(profileRequest), ProfileRequest.class)
-                .retrieve()
-                .bodyToMono(Void.class)
-                .block();
-    }
 
     /**
      *
@@ -141,17 +146,21 @@ public class UserService {
      * @throws IllegalArgumentException
      * @return void
      */
-    public void updateEmail(EmailUpdateRequest emailUpdateRequest) throws IllegalArgumentException {
+    public void updateEmail(@NotNull EmailUpdateRequest emailUpdateRequest) throws IllegalArgumentException {
+        if (!validateEmail(emailUpdateRequest.getEmail()))
+            log.info("ERROR: UserService; updateEmail: Invalid emailUpdateRequest - {}", emailUpdateRequest);
+
         Optional<User> user = userRepository.findById(emailUpdateRequest.getId());
 
-        if (!user.isPresent()) 
-            throw new IllegalArgumentException("User id invalid");
-        if (!validateEmail(emailUpdateRequest.getEmail()))        
-            throw new IllegalArgumentException("invalid EmailUpdateRequest");
+        if (user.isPresent()){
+            User _user = user.get();
+            log.info("UserService; updateEmail: Email is updated, old email {} - new email {}", _user.getEmail(), emailUpdateRequest.getEmail());
+            _user.setEmail(emailUpdateRequest.getEmail());
+            userRepository.save(_user);
+        }
+        else
+            log.info("ERROR: UserService; updateEmail: User id invalid ");
 
-        User _user = user.get();
-        _user.setEmail(emailUpdateRequest.getEmail());
-        userRepository.save(_user);
     }
 
     /**
@@ -160,25 +169,27 @@ public class UserService {
      * @throws IllegalArgumentException
      * @return void
      */
-    public void updatePassword(PasswordUpdateRequest passwordUpdateRequest) throws IllegalArgumentException {
+    public void updatePassword(PasswordUpdateRequest passwordUpdateRequest){
         Optional<User> user = userRepository.findById(passwordUpdateRequest.getId());
 
-        if (!user.isPresent()) 
-            throw new IllegalArgumentException("User id invalid");
-            
-        User _user = user.get();
-        boolean oldPasswordIsCorrect = _user.getPassword().equals(passwordUpdateRequest.getOldPassword());
-        boolean newPasswordIsDifferentFromOldPassword = !_user.getPassword().equals(passwordUpdateRequest.getNewPassword());
-        boolean validNewPassword = validatePassword(passwordUpdateRequest.getNewPassword()); 
-        if(!oldPasswordIsCorrect)
-            throw new IllegalArgumentException("old password is incorrect");
-        if (!newPasswordIsDifferentFromOldPassword)
-            throw new IllegalArgumentException("new password must be different from old one");
-        if (!validNewPassword)
-            throw new IllegalArgumentException("new password invalid format");
-        
-        _user.setPassword(passwordUpdateRequest.getNewPassword());
-        userRepository.save(_user);
+        if (user.isPresent()){
+            User _user = user.get();
+            boolean oldPasswordIsCorrect = _user.getPassword().equals(passwordUpdateRequest.getOldPassword());
+            boolean newPasswordIsDifferentFromOldPassword = !_user.getPassword().equals(passwordUpdateRequest.getNewPassword());
+            boolean validNewPassword = validatePassword(passwordUpdateRequest.getNewPassword());
+            if(!oldPasswordIsCorrect)
+                log.info("ERROR: UserService; updatePassword: Old password is not correct");
+            if (!newPasswordIsDifferentFromOldPassword)
+                log.info("ERROR: UserService; updatePassword: New password must be different from the old one ");
+            if (!validNewPassword)
+                log.info("ERROR: UserService; updatePassword: New password must has an invalid format ");
+
+            _user.setPassword(passwordUpdateRequest.getNewPassword());
+            userRepository.save(_user);
+
+        }
+        else log.info("ERROR: UserService; updatePassword: User id invalid");
+
     }
 
     /**
@@ -208,10 +219,9 @@ public class UserService {
      * @return true if user is present and his credentials are valid, false otherwise
      */
     public boolean userLogin(UserLoginRequest userLoginRequest){
+        log.info("UserService; userLogin...");
         Optional<User> opt_user = getUserByUserEmail(userLoginRequest.getEmail());
-
-        //return opt_user.isPresent()  && Objects.equals(opt_user.get().getPassword(), userLoginRequest.getPassword());
-        return opt_user.isPresent()  && opt_user.get().getPassword().equals(userLoginRequest.getPassword());
+        return opt_user.isPresent() && opt_user.get().getPassword().equals(userLoginRequest.getPassword());
     }
 
     /**
@@ -221,6 +231,7 @@ public class UserService {
      * @return true
      */
     public boolean userLoginWithGoogle(UserGoogleDTO userGoogleDTO){
+        log.info("Userservice; userLoginWithGoogle...");
         if(!getUserByUserEmail(userGoogleDTO.getEmail()).isPresent())
             userRegistrationGoogle(userGoogleDTO);
         return true;
@@ -234,22 +245,25 @@ public class UserService {
     public void unsubscribeUser(UnsubscribeUserRequest unsubscribeUserRequest){
         Optional<User> user = userRepository.getUserByUserName(unsubscribeUserRequest.getUserName());
 
-        if(!user.isPresent())
-            throw new IllegalArgumentException("Something went wrong!");
-            
-        User _user = user.get();
-        //TODO
-        /* if(!_user.getPassword().equals(unsubscribeUserRequest.getPassword()))
-            throw new IllegalArgumentException("Something went wrong!");
-         */
-        webClientBuilder.build().post()
-            .uri("http://profile-service/api/profile/unsubscription",
-                    UriBuilder::build)
-            .body(Mono.just(_user.getUserName()), String.class)
-            .retrieve()
-            .bodyToMono(Void.class)
-            .block();
-        userRepository.delete(_user);
+        if(user.isPresent()){
+            log.info("UserService; unsubscribeUser...");
+            User _user = user.get();
+            //TODO:
+            // if(!_user.getPassword().equals(unsubscribeUserRequest.getPassword()))
+            //    throw new IllegalArgumentException("Something went wrong!");
+
+            //TODO: aggiungere la comunicazione asincrona
+            webClientBuilder.build().post()
+                    .uri("http://profile-service/api/profile/unsubscription",
+                            UriBuilder::build)
+                    .body(Mono.just(_user.getUserName()), String.class)
+                    .retrieve()
+                    .bodyToMono(Void.class)
+                    .block();
+            userRepository.delete(_user);
+        }
+        else  log.info("ERROR: UserService; unsubscribeUser: something went wrong...");
+
     }
 
     /**

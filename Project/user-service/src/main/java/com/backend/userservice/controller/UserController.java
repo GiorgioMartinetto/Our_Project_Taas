@@ -15,43 +15,28 @@ public class UserController {
 
     @PostMapping("/registration")
     @ResponseStatus(HttpStatus.CREATED)
-    public void userRegistration(@RequestBody UserRequest userRequest){
-        userService.userRegistration(userRequest);
-    }
+    public void userRegistration(@RequestBody UserRequest userRequest){ userService.userRegistration(userRequest); }
 
 
 
     @PostMapping("/updateEmail")
     @ResponseStatus(HttpStatus.OK)
-    public void updateEmail(@RequestBody EmailUpdateRequest emailUpdateRequest){
-        userService.updateEmail(emailUpdateRequest);
-    }
+    public void updateEmail(@RequestBody EmailUpdateRequest emailUpdateRequest){ userService.updateEmail(emailUpdateRequest); }
 
     @PostMapping("/updatePassword")
     @ResponseStatus(HttpStatus.OK)
-    public void updatePassword(@RequestBody PasswordUpdateRequest passwordUpdateRequest){
-        userService.updatePassword(passwordUpdateRequest);
-    }
+    public void updatePassword(@RequestBody PasswordUpdateRequest passwordUpdateRequest){ userService.updatePassword(passwordUpdateRequest); }
 
     @PostMapping("/unsubscribe")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void unsubscribeUser(@RequestBody UnsubscribeUserRequest unsubscribeUserRequest){
-        userService.unsubscribeUser(unsubscribeUserRequest);
-    }
+    public void unsubscribeUser(@RequestBody UnsubscribeUserRequest unsubscribeUserRequest){ userService.unsubscribeUser(unsubscribeUserRequest); }
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    public boolean userLogin(@RequestBody UserLoginRequest userLoginRequest){
-        System.out.println("Login ...");
-        return userService.userLogin(userLoginRequest);
-    }
+    public boolean userLogin(@RequestBody UserLoginRequest userLoginRequest){ return userService.userLogin(userLoginRequest); }
 
     @PostMapping("/loginWithGoogle")
     @ResponseStatus(HttpStatus.OK)
-    public boolean userLoginWithGoogle(@RequestBody UserGoogleDTO userGoogleDTO){
-        System.out.println("Login with Google ...");
+    public boolean userLoginWithGoogle(@RequestBody UserGoogleDTO userGoogleDTO){ return userService.userLoginWithGoogle(userGoogleDTO); }
 
-        
-        return userService.userLoginWithGoogle(userGoogleDTO);
-    }
 }
